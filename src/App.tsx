@@ -1,6 +1,8 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import './HandWrinting';
+import HandWriting from './HandWrinting';
 
 function App() {
   return (
@@ -10,6 +12,7 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
+        <HandWriting />
         <a
           className="App-link"
           href="https://reactjs.org"
