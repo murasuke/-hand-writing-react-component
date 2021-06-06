@@ -18,13 +18,14 @@
 
 ```typescript
 function App() {
-  const [src, setSrc] = React.useState(null);
+  const [dataUrl, setDataUrl] = React.useState(null);
   const onUpdateCanvas = (e: HTMLCanvasElement) => {
-    setSrc(e.toDataURL('image/png'));
+    setDataUrl(e.toDataURL('image/png'));
   }
+
   const downloadCanvasImage = () => {
     const dlLink = document.createElement("a"); 
-    dlLink.href = src;
+    dlLink.href = dataUrl;
     dlLink.download = 'handwriting.png';
     dlLink.click();
     dlLink.remove();  
@@ -39,7 +40,7 @@ function App() {
       </div>
       <div>
         <h2>HandWritingの更新イベントサンプル(画像更新時にimgタグに反映)</h2>
-          <img id="newImg" alt="" src={src} />
+          <img id="newImg" alt="" src={dataUrl} />
       </div>
       <div>
         <button type="button" onClick={downloadCanvasImage}>
@@ -58,7 +59,7 @@ function App() {
 ```
 
 ```typescript
-  <img id="newImg" alt="" src={src} />
+  <img id="newImg" alt="" src={dataUrl} />
 ```
 
 ### 画像のダウンロード
