@@ -6,6 +6,7 @@ export type HandWritingAttribute = {
   lineWidth?: number,
   strokeStyle?: string,
   lineCap?: CanvasLineCap,
+  onUpdateCanvas?: (e: HTMLCanvasElement) => void,
 }
 
 const HandWriting: React.FC<HandWritingAttribute> = (props) => {
@@ -20,7 +21,7 @@ const HandWriting: React.FC<HandWritingAttribute> = (props) => {
     return ctx;
   }
   
-  const mouseDown: React.MouseEventHandler= (e) =>  {
+  const mouseDown: React.MouseEventHandler = (e) =>  {
     const { offsetX: x ,offsetY: y } = e.nativeEvent;
     setDrawing(true);
     const ctx = getContext();
@@ -28,7 +29,7 @@ const HandWriting: React.FC<HandWritingAttribute> = (props) => {
   }
 
 
-  const mouseMove: React.MouseEventHandler= (e) => {
+  const mouseMove: React.MouseEventHandler = (e) => {
     if (!drawing) return;
 
     const { offsetX: x ,offsetY: y } = e.nativeEvent;
@@ -37,8 +38,9 @@ const HandWriting: React.FC<HandWritingAttribute> = (props) => {
     ctx.stroke();
   } 
 
-  const endDrawing = () =>  {
+  const endDrawing = () => {
     setDrawing(false);
+    if (props.onUpdateCanvas) props.onUpdateCanvas(canvas.current);
   }
 
   return (
@@ -48,16 +50,6 @@ const HandWriting: React.FC<HandWritingAttribute> = (props) => {
         onMouseMove={mouseMove} 
         onMouseUp={endDrawing} 
         onMouseLeave={endDrawing} />
-      {/* 
-      <h2>画像出力</h2>
-      <div id="img-box">
-        <img id="newImg" alt=""  />
-      </div>
-      <div id="btn-box">
-        <button type="button" onClick={chgImg()} value="1">
-          保存
-        </button>
-      </div> */}
     </>
   );
 };
