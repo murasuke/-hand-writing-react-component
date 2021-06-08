@@ -4,10 +4,16 @@ import HandWriting from './HandWrinting';
 function App() {
   const [dataUrl, setDataUrl] = React.useState(null);
   const [settings, setSettings] = React.useState({lineWidth:7, lineColor: '#5555bb', clear: false})
+  
+  // 画像コンポーネント更新コールバック
   const onUpdateCanvas = (e: HTMLCanvasElement) => {
+    // 画像をstateに保存し下記の用途で利用する
+    //  ⇒<img>タグに表示
+    //  ⇒画像のダウンロード
     setDataUrl(e.toDataURL('image/png'));
   }
 
+  // 画像ダウンロード
   const downloadCanvasImage = () => {
     const dlLink = document.createElement("a"); 
     dlLink.href = dataUrl;
@@ -16,18 +22,21 @@ function App() {
     dlLink.remove();  
   }
 
+  // 手書きコンポーネント線の幅変更
   const setLineWidth = (e:  React.ChangeEvent<HTMLSelectElement>) => {
     setSettings( prev => {
       return {...prev, lineWidth: parseInt(e.target.value, 10)}
     });
   }
 
+  // 手書きコンポーネント線の色変更
   const setColor= (e:  React.ChangeEvent<HTMLInputElement>) => {
     setSettings( prev => {
       return {...prev, lineColor: e.target.value}
     });
   }
 
+  // 手書きコンポーネントクリア
   const clearComponent= () => {
     setSettings( prev => {
       return {...prev, clear: !prev.clear}
