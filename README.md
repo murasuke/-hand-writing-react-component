@@ -6,6 +6,15 @@
 
 * canvasの大きさはCSSではなく属性で設定する。
 
+```typescript
+  const canvas = useRef(null);
+
+  <canvas ref={canvas}
+    width={props.width} height={props.height}
+    onMouseDown={mouseDown} 
+    ～～～ 以下省略 ～～～
+```
+
 * コンポーネントは描画完了イベント(onUpdateCanvas)をコールバックする
   * 呼び出し元で、画像のダウンロードなどで利用できる。
 
@@ -26,6 +35,11 @@
 ## コンポーネントの仕組み
 
 * 手書きコンポーネントソース全体
+  * ドラッグ中(mouseDown⇒mouseMove)に線を描画します
+  * マウスを離す(onMouseUp)か、canvas領域から出る(onMouseLeave)と線描画を終了します
+  * useEffectで`props.clear`の値変更を監視し、canvasをクリアします
+
+
 ```typescript
 import React, { useRef, useState, useEffect } from "react";
 
@@ -210,7 +224,7 @@ export default App;
 ```
 ### 画像をimgタグに反映する
 
-* Canvasの更新コールバックで、画像に変換し<imgタグに表示します>
+* Canvasの更新コールバックで、画像に変換し<img>タグに表示します
 
 * dataUrlは画像をbase64エンコーディングした文字列がセットされます。 
 
