@@ -1,6 +1,6 @@
 # Reactで手書きコンポーネント
 
-## ポイント
+## canvasをReactで利用するためのポイント
 
 * canvasはDOMオブジェクトを直接操作する必要があるため`useRef`フックで利用する
 
@@ -19,7 +19,7 @@
   1. クリアプロパティ(clear: boolean)を変更すると領域をクリアします(親コンポーネントのから子コンポーネントの機能を呼び出す方法がこれしか思いつかなかった。functionコンポーネントでやり方あるんですかね？)
   1. 1本ごと線描画完了時に、onUpdateCanvas(canvas)をコールバックします。
       
-      ⇒ 引数canvasでDOM自体を引き渡すため、画像をダウンロードするなど出来ます。
+      ⇒ 引数canvasでDOM自体を引き渡します。利用側で画像をダウンロードするなど出来ます。
 
 
 
@@ -209,10 +209,22 @@ function App() {
 export default App;
 ```
 ### 画像をimgタグに反映する
+
+* Canvasの更新コールバックで、画像に変換し<imgタグに表示します>
+
+* dataUrlは画像をbase64エンコーディングした文字列がセットされます。 
+
+  data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQA～
+
 ```typescript
+  // 画像コンポーネント更新コールバック
   const onUpdateCanvas = (e: HTMLCanvasElement) => {
-    setSrc(e.toDataURL('image/png'));
+    // 画像をstateに保存し下記の用途で利用する
+    //  ⇒<img>タグに表示
+    //  ⇒画像のダウンロード
+    setDataUrl(e.toDataURL('image/png'));
   }
+
 ```
 
 ```typescript
@@ -220,14 +232,19 @@ export default App;
 ```
 
 ### 画像のダウンロード
+
+* dataUrlにセットした画像データをダウンロードするため<a>を動的に生成します。
+
 ```typescript
+  // 画像ダウンロード
   const downloadCanvasImage = () => {
     const dlLink = document.createElement("a"); 
-    dlLink.href = src;
+    dlLink.href = dataUrl;
     dlLink.download = 'handwriting.png';
     dlLink.click();
     dlLink.remove();  
   }
+
 ```
 
 ## 参考にしたサイト
