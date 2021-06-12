@@ -1,5 +1,7 @@
 # Reactで手書きコンポーネント
 
+![handwriting.png](./img/HandWriting.png)
+
 ## canvasをReactで利用するためのポイント
 
 * canvasはDOMオブジェクトを直接操作する必要があるため`useRef`フックで利用する

@@ -46,7 +46,7 @@ function App() {
   const lineWidth = [1,2,3,5,7,10,14,20];
   return (
     <>
-      <h1>HandWritingコンポーネント利用サンプル</h1>
+      <h1>HandWriting(手書き)コンポーネント利用サンプル</h1>
       <div>
         <h2>HandWritingコンポーネント</h2>
           <div>
@@ -63,12 +63,12 @@ function App() {
           <HandWriting onUpdateCanvas={onUpdateCanvas} {...settings} />
       </div>
       <div>
-        <h2>HandWritingの更新イベントサンプル(画像更新時にimgタグに反映)</h2>
+        <h2>手書きコンポーネントの更新イベントサンプル(imgタグに反映)</h2>
           <img id="newImg" alt="" src={dataUrl} />
       </div>
       <div>
         <button type="button" onClick={downloadCanvasImage}>
-          HandWriting画像のダウンロード
+          手書きコンポーネント画像ダウンロード
         </button>
       </div>
     </>
