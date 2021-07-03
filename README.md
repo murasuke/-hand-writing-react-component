@@ -1,5 +1,7 @@
 # Reactで手書きコンポーネント
 
+[お試しページ(github pages)](https://murasuke.github.io/hand-writing-react-component/)
+
 ![handwriting.png](./img/HandWriting.png)
 
 ## canvasをReactで利用するためのポイント
