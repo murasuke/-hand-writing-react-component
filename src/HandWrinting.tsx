@@ -53,7 +53,14 @@ const HandWriting: React.FC<HandWritingAttribute> = (props) => {
     ctx.beginPath();
     ctx.moveTo(x, y);
   }
-
+  const mouseDown2: React.TouchEventHandler = (e) =>  {
+    const rect = e.target.getBoundingClientRect();
+    const { offsetX: x ,offsetY: y } = e.nativeEvent;
+    setDrawing(true);
+    const ctx = getContext();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }
   // マウスの動きに合わせて線を描画する
   const mouseMove: React.MouseEventHandler = (e) => {
     if (!drawing) return;
@@ -77,6 +84,9 @@ const HandWriting: React.FC<HandWritingAttribute> = (props) => {
         onMouseDown={mouseDown} 
         onMouseMove={mouseMove} 
         onMouseUp={endDrawing} 
+        onTouchStart={mouseDown2} 
+        ontouchmove={mouseMove} 
+        ontouchend={endDrawing} 
         onMouseLeave={endDrawing} />
     </>
   );
