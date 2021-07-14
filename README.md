@@ -25,6 +25,7 @@
 ## 機能
 
 * 手書きでお絵描きをするコンポーネントです。マウスドラッグ中に線を引きます。
+* マウスタッチイベントにも対応しました。
 
 * propsで下記機能を利用できます
   1. 線の太さ、色を変更可能(lineHeigh, lineColor)
@@ -39,9 +40,27 @@
 ## コンポーネントの仕組み
 
 * 手書きコンポーネントソース全体
-  * ドラッグ中(mouseDown⇒mouseMove)に線を描画します
+  * ドラッグ中(mouseDown⇒mouseMove)、もしくはタッチ中(onTouchStart⇒onTouchMove)に線を描画します
   * マウスを離す(onMouseUp)か、canvas領域から出る(onMouseLeave)と線描画を終了します
   * useEffectで`props.clear`の値変更を監視し、canvasをクリアします
+  * マウスイベントとタッチイベントハンドラを共通ロジックとするため、新しいイベントハンドラ型を定義しています
+  ```typescript
+    type MouseOrTouchEventHandler<T = Element> = React.EventHandler<React.MouseEvent<T>| React.TouchEvent<T>>;
+  ```
+  * タッチイベントではoffsetが取得できないため、offsetPosition()メソッドで取得するように切り出し、イベント処理を共有化しています
+  ```typescript
+    // offset(canvas左上からの)を返す。Touch,Mouseイベント両対応
+  const offsetPosition =  (e : React.MouseEvent | React.TouchEvent) => {
+    if (e.nativeEvent instanceof TouchEvent) {
+      const rect = (e.target as any).getBoundingClientRect();      
+      const offsetX = (e.nativeEvent.touches[0].clientX - window.pageXOffset - rect.left);
+      const offsetY = (e.nativeEvent.touches[0].clientY - window.pageYOffset - rect.top);
+      return { offsetX, offsetY };
+    } else if (e.nativeEvent instanceof MouseEvent) {
+      return { offsetX: e.nativeEvent.offsetX ,offsetY: e.nativeEvent.offsetY };
+    }
+  }
+  ```
 
 
 ```typescript
@@ -92,20 +111,21 @@ const HandWriting: React.FC<HandWritingAttribute> = (props) => {
     return ctx;
   }
   
+  type MouseOrTouchEventHandler<T = Element> = React.EventHandler<React.MouseEvent<T>| React.TouchEvent<T>>;
+
   // 線描画開始処理。beginPath()で新しいパスを開始する(開始しないと色や太さが変更できない)
-  const mouseDown: React.MouseEventHandler = (e) =>  {
-    const { offsetX: x ,offsetY: y } = e.nativeEvent;
+  const drawStart: MouseOrTouchEventHandler = (e) =>  {
+    const { offsetX: x ,offsetY: y } = offsetPosition(e);
     setDrawing(true);
     const ctx = getContext();
     ctx.beginPath();
     ctx.moveTo(x, y);
   }
 
-  // マウスの動きに合わせて線を描画する
-  const mouseMove: React.MouseEventHandler = (e) => {
+  // 動きに合わせて線を描画する
+  const drawMove: MouseOrTouchEventHandler = (e) => {
     if (!drawing) return;
-
-    const { offsetX: x ,offsetY: y } = e.nativeEvent;
+    const { offsetX: x ,offsetY: y } = offsetPosition(e);
     const ctx = getContext();
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -117,15 +137,29 @@ const HandWriting: React.FC<HandWritingAttribute> = (props) => {
     if (props.onUpdateCanvas) props.onUpdateCanvas(canvas.current);
   }
 
-  // canvas
+  // offset(canvas左上からの)を返す。Touch,Mouseイベント両対応
+  const offsetPosition =  (e : React.MouseEvent | React.TouchEvent) => {
+    if (e.nativeEvent instanceof TouchEvent) {
+      const rect = (e.target as any).getBoundingClientRect();      
+      const offsetX = (e.nativeEvent.touches[0].clientX - window.pageXOffset - rect.left);
+      const offsetY = (e.nativeEvent.touches[0].clientY - window.pageYOffset - rect.top);
+      return { offsetX, offsetY };
+    } else if (e.nativeEvent instanceof MouseEvent) {
+      return { offsetX: e.nativeEvent.offsetX ,offsetY: e.nativeEvent.offsetY };
+    }
+  }
+
   return (
     <>
       <canvas ref={canvas}
         width={props.width} height={props.height}
-        onMouseDown={mouseDown} 
-        onMouseMove={mouseMove} 
-        onMouseUp={endDrawing} 
-        onMouseLeave={endDrawing} />
+        onMouseDown={drawStart} 
+        onMouseMove={drawMove} 
+        onMouseUp={endDrawing}
+        onMouseLeave={endDrawing}
+        onTouchStart={drawStart} 
+        onTouchMove={drawMove} 
+        onTouchEnd={endDrawing} />
     </>
   );
 };
@@ -140,6 +174,7 @@ HandWriting.defaultProps = {
 };
 
 export default HandWriting;
+
 ```
 
 ## 利用方法
