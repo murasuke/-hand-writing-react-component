@@ -62,6 +62,7 @@
   }
   ```
 
+* コンポーネントソース全体
 
 ```typescript
 import React, { useRef, useState, useEffect } from "react";
